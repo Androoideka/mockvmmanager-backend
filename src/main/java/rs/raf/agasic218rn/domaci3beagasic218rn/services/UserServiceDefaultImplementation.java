@@ -34,7 +34,7 @@ public class UserServiceDefaultImplementation implements UserService {
     }
 
     @Override
-    public boolean createUser(UserRequest userRequest) {
+    public void createUser(UserRequest userRequest) {
         User user = new User();
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
@@ -47,6 +47,5 @@ public class UserServiceDefaultImplementation implements UserService {
         permissionList.setCanDeleteUsers(userRequest.getPermissionListDTO().canDeleteUsers());
         user.setPermissionList(permissionList);
         this.userRepository.save(user);
-        return true;
     }
 }
