@@ -1,26 +1,26 @@
-package rs.raf.agasic218rn.domaci3beagasic218rn.model;
+package rs.raf.agasic218rn.domaci3beagasic218rn.responses;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import rs.raf.agasic218rn.domaci3beagasic218rn.configuration.PermissionUtil;
+import rs.raf.agasic218rn.domaci3beagasic218rn.model.PermissionList;
 
 import java.util.*;
 
-public class PermissionListDTO {
+public class PermissionListResponse {
     private boolean[] permissionValues = new boolean[PermissionUtil.REPRESENTATIONS.length];
 
-    public PermissionListDTO() {
+    public PermissionListResponse() {
 
     }
 
-    public PermissionListDTO(PermissionList permissionList) {
+    public PermissionListResponse(PermissionList permissionList) {
         permissionValues[0] = permissionList.isCanCreateUsers();
         permissionValues[1] = permissionList.isCanReadUsers();
         permissionValues[2] = permissionList.isCanUpdateUsers();
         permissionValues[3] = permissionList.isCanDeleteUsers();
     }
 
-    public PermissionListDTO(Collection<? extends GrantedAuthority> authorities) {
+    public PermissionListResponse(Collection<? extends GrantedAuthority> authorities) {
         for(int i = 0; i < PermissionUtil.AUTHORITIES.length; i++) {
             if(authorities.contains(PermissionUtil.AUTHORITIES[i])) {
                 permissionValues[i] = true;
@@ -60,7 +60,7 @@ public class PermissionListDTO {
 
     public void setCanDeleteUsers(boolean canDeleteUsers) { permissionValues[3] = canDeleteUsers; }
 
-    public Map<String, Boolean> getPermissionMap() {
+    public Map<String, Boolean> generatePermissionMap() {
         Map<String, Boolean> permissionMap = new HashMap<>();
         for(int i = 0; i < permissionValues.length; i++) {
             permissionMap.put(PermissionUtil.REPRESENTATIONS[i], permissionValues[i]);
@@ -103,7 +103,7 @@ public class PermissionListDTO {
         if(getClass() != obj.getClass()) {
             return false;
         }
-        PermissionListDTO perms = (PermissionListDTO) obj;
+        PermissionListResponse perms = (PermissionListResponse) obj;
         if(permissionValues == null || perms.permissionValues == null || permissionValues.length != perms.permissionValues.length) {
             return false;
         }

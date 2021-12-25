@@ -1,25 +1,27 @@
 package rs.raf.agasic218rn.domaci3beagasic218rn.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import rs.raf.agasic218rn.domaci3beagasic218rn.model.PermissionList;
-import rs.raf.agasic218rn.domaci3beagasic218rn.model.PermissionListDTO;
+import rs.raf.agasic218rn.domaci3beagasic218rn.mappers.UserMapper;
+import rs.raf.agasic218rn.domaci3beagasic218rn.responses.PermissionListResponse;
 import rs.raf.agasic218rn.domaci3beagasic218rn.model.User;
 import rs.raf.agasic218rn.domaci3beagasic218rn.repositories.UserRepository;
 import rs.raf.agasic218rn.domaci3beagasic218rn.requests.UserRequest;
+import rs.raf.agasic218rn.domaci3beagasic218rn.responses.UserResponse;
 
 import java.util.List;
 
 public class UserServiceDefaultImplementation implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserServiceDefaultImplementation(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceDefaultImplementation(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -28,24 +30,18 @@ public class UserServiceDefaultImplementation implements UserService {
         if(user == null) {
             throw new UsernameNotFoundException("User with email " + email + " could not be found.");
         }
-        PermissionListDTO permissionListDTO = new PermissionListDTO(user.getPermissionList());
-        List<GrantedAuthority> grantedAuthorities = permissionListDTO.toSpringAuthorities();
+        PermissionListResponse permissionListResponse = new PermissionListResponse(user.getPermissionList());
+        List<GrantedAuthority> grantedAuthorities = permissionListResponse.toSpringAuthorities();
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 
     @Override
-    public void createUser(UserRequest userRequest) {
-        User user = new User();
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setName(userRequest.getName());
-        user.setSurname(userRequest.getSurname());
-        PermissionList permissionList = new PermissionList();
-        permissionList.setCanCreateUsers(userRequest.getPermissionListDTO().canCreateUsers());
-        permissionList.setCanReadUsers(userRequest.getPermissionListDTO().canReadUsers());
-        permissionList.setCanUpdateUsers(userRequest.getPermissionListDTO().canUpdateUsers());
-        permissionList.setCanDeleteUsers(userRequest.getPermissionListDTO().canDeleteUsers());
-        user.setPermissionList(permissionList);
-        this.userRepository.save(user);
+    public void create(UserRequest userRequest) {
+        this.userRepository.save(this.userMapper.UserRequestToUser(userRequest));
+    }
+
+    @Override
+    public Page<UserResponse> read(Integer page, Integer size) {
+        return this.userRepository.findAll(PageRequest.of(page, size)).map(userMapper::UserToUserResponse);
     }
 }

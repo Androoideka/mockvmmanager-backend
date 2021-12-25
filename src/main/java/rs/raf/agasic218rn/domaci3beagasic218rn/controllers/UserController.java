@@ -1,7 +1,6 @@
 package rs.raf.agasic218rn.domaci3beagasic218rn.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,14 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import rs.raf.agasic218rn.domaci3beagasic218rn.configuration.JwtUtil;
-import rs.raf.agasic218rn.domaci3beagasic218rn.model.PermissionListDTO;
+import rs.raf.agasic218rn.domaci3beagasic218rn.responses.PermissionListResponse;
 import rs.raf.agasic218rn.domaci3beagasic218rn.requests.LoginRequest;
 import rs.raf.agasic218rn.domaci3beagasic218rn.requests.UserRequest;
 import rs.raf.agasic218rn.domaci3beagasic218rn.responses.LoginResponse;
 import rs.raf.agasic218rn.domaci3beagasic218rn.services.UserService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -44,16 +40,24 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(401).build();
         }
-        PermissionListDTO permissionListDTO = new PermissionListDTO(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        PermissionListResponse permissionListResponse = new PermissionListResponse(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
-        return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(loginRequest.getEmail(), permissionListDTO.getPermissionMap())));
+        return ResponseEntity.ok(new LoginResponse(
+                jwtUtil.generateToken(loginRequest.getEmail(), permissionListResponse.generatePermissionMap()),
+                loginRequest.getEmail()));
     }
 
     @PostMapping(value = "/create",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody UserRequest userRequest) {
-        userService.createUser(userRequest);
+        this.userService.create(userRequest);
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping(value = "/list",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(this.userService.read(page, size));
     }
 }

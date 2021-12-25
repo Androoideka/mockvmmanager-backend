@@ -30,6 +30,7 @@ public class TestRunner implements CommandLineRunner {
         user.setPassword(this.passwordEncoder.encode("tianming"));
         PermissionList permissionList = new PermissionList();
         permissionList.setCanCreateUsers(true);
+        permissionList.setCanReadUsers(true);
         user.setPermissionList(permissionList);
         this.userRepository.save(user);
     }

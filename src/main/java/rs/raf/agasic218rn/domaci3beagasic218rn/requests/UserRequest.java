@@ -1,13 +1,13 @@
 package rs.raf.agasic218rn.domaci3beagasic218rn.requests;
 
-import rs.raf.agasic218rn.domaci3beagasic218rn.model.PermissionListDTO;
+import rs.raf.agasic218rn.domaci3beagasic218rn.responses.PermissionListResponse;
 
 public class UserRequest {
     private String email;
     private String password;
     private String name;
     private String surname;
-    private PermissionListDTO permissionListDTO;
+    private PermissionListResponse permissionList;
 
     public UserRequest() {
     }
@@ -44,11 +44,11 @@ public class UserRequest {
         this.surname = surname;
     }
 
-    public PermissionListDTO getPermissionListDTO() {
-        return permissionListDTO;
+    public PermissionListResponse getPermissionList() {
+        return permissionList;
     }
 
-    public void setPermissionListDTO(PermissionListDTO permissionListDTO) {
-        this.permissionListDTO = permissionListDTO;
+    public void setPermissionList(PermissionListResponse permissionList) {
+        this.permissionList = permissionList;
     }
 }
