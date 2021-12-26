@@ -6,6 +6,8 @@ import rs.raf.agasic218rn.domaci3beagasic218rn.requests.UserRequest;
 import rs.raf.agasic218rn.domaci3beagasic218rn.responses.UserResponse;
 
 public interface UserService extends UserDetailsService {
+    UserResponse findByEmail(String email);
+
     void create(UserRequest userRequest);
 
     Page<UserResponse> list(Integer page, Integer size);

@@ -36,6 +36,12 @@ public class UserServiceDefaultImplementation implements UserService {
     }
 
     @Override
+    public UserResponse findByEmail(String email) {
+        User user = this.userRepository.findByEmail(email);
+        return this.userMapper.UserToUserResponse(user);
+    }
+
+    @Override
     public void create(UserRequest userRequest) {
         this.userRepository.save(this.userMapper.UserRequestToUser(userRequest));
     }

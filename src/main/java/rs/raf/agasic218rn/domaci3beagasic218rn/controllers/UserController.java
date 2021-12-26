@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 import rs.raf.agasic218rn.domaci3beagasic218rn.configuration.JwtUtil;
 import rs.raf.agasic218rn.domaci3beagasic218rn.responses.PermissionListResponse;
@@ -47,32 +48,13 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(401).build();
         }
-        /*try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        PermissionListResponse permissionListResponse = new PermissionListResponse(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-        for(GrantedAuthority authority : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
-            System.out.println(authority.getAuthority());
-        }for(GrantedAuthority authority : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
-            System.out.println(authority.getAuthority());
-        }for(GrantedAuthority authority : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
-            System.out.println(authority.getAuthority());
-        }*/
+        UserResponse userResponse = this.userService.findByEmail(loginRequest.getEmail());
         LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(loginRequest.getEmail()),
-                loginRequest.getEmail(),
-                null);
-        PermissionListResponse permissionListResponse = new PermissionListResponse(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-        loginResponse.setPermissionListResponse(permissionListResponse);
+                userResponse);
         return ResponseEntity.ok(loginResponse);
-        /*return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(loginRequest.getEmail()),
-                loginRequest.getEmail(),
-                permissionListResponse));*/
     }
 
-    @PostMapping(value = "/logout",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(value = "/logout",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
