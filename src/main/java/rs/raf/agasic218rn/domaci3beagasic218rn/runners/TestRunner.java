@@ -31,6 +31,8 @@ public class TestRunner implements CommandLineRunner {
         PermissionList permissionList = new PermissionList();
         permissionList.setCanCreateUsers(true);
         permissionList.setCanReadUsers(true);
+        permissionList.setCanDeleteUsers(true);
+        permissionList.setCanUpdateUsers(true);
         user.setPermissionList(permissionList);
         this.userRepository.save(user);
     }

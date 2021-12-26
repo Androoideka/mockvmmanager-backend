@@ -29,8 +29,8 @@ public class JwtUtil {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    public String generateToken(String username, Map<String, Boolean> permissionMap) {
-        Map<String, Object> claims = new HashMap<>(permissionMap);
+    public String generateToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)

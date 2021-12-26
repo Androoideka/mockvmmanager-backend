@@ -1,12 +1,21 @@
 package rs.raf.agasic218rn.domaci3beagasic218rn.responses;
 
 public class UserResponse {
+    private Long userId;
     private String email;
     private String name;
     private String surname;
     private PermissionListResponse permissionListResponse;
 
     public UserResponse() {
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {

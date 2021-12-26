@@ -41,7 +41,33 @@ public class UserServiceDefaultImplementation implements UserService {
     }
 
     @Override
-    public Page<UserResponse> read(Integer page, Integer size) {
+    public Page<UserResponse> list(Integer page, Integer size) {
         return this.userRepository.findAll(PageRequest.of(page, size)).map(userMapper::UserToUserResponse);
+    }
+
+    @Override
+    public UserResponse view(Long userId) {
+        User user = this.userRepository
+                .findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Cannot view because the user does not exist."));
+        return this.userMapper.UserToUserResponse(user);
+    }
+
+    @Override
+    public void edit(UserRequest userRequest) {
+        User user = this.userRepository
+                .findById(userRequest.getUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("Cannot save changes because the user does not exist."));
+        User newUser = userMapper.UserRequestToUser(userRequest);
+        newUser.setUserId(userRequest.getUserId());
+        this.userRepository.save(newUser);
+    }
+
+    @Override
+    public void delete(Long id) {
+        User user = this.userRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Cannot complete the delete operation because the user does not exist."));
+        this.userRepository.delete(user);
     }
 }

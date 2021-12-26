@@ -64,9 +64,6 @@ public class PermissionListResponse {
         Map<String, Boolean> permissionMap = new HashMap<>();
         for(int i = 0; i < permissionValues.length; i++) {
             permissionMap.put(PermissionUtil.REPRESENTATIONS[i], permissionValues[i]);
-            /*if(permissionValues[i]) {
-                permissionMap.put(permissionRepresentations[i], permissionValues[i]);
-            }*/
         }
         return permissionMap;
     }

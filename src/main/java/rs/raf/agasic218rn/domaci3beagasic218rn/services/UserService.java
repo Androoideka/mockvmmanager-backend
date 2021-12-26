@@ -8,5 +8,11 @@ import rs.raf.agasic218rn.domaci3beagasic218rn.responses.UserResponse;
 public interface UserService extends UserDetailsService {
     void create(UserRequest userRequest);
 
-    Page<UserResponse> read(Integer page, Integer size);
+    Page<UserResponse> list(Integer page, Integer size);
+
+    UserResponse view(Long userId);
+
+    void edit(UserRequest userRequest);
+
+    void delete(Long id);
 }
