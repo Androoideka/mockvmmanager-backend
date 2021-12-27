@@ -42,8 +42,8 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/list*").hasAuthority(PermissionUtil.READ_USERS)
                 .antMatchers("/user/edit").hasAuthority(PermissionUtil.UPDATE_USERS)
                 .antMatchers("/user/delete*").hasAuthority(PermissionUtil.DELETE_USERS)
-                .antMatchers("/user/logout").authenticated()
-                .antMatchers("/*", "/user/login*").permitAll()
+                .antMatchers("/user/logout*").authenticated()
+                .antMatchers("/user/login*").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

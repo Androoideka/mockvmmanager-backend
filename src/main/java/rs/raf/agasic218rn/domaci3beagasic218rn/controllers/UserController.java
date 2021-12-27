@@ -42,12 +42,7 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(401).build();
-        }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         UserResponse userResponse = this.userService.findByEmail(loginRequest.getEmail());
         LoginResponse loginResponse = new LoginResponse(jwtUtil.generateToken(loginRequest.getEmail()),
                 userResponse);

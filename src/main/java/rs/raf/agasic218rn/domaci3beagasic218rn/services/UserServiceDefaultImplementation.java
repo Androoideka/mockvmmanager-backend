@@ -66,6 +66,7 @@ public class UserServiceDefaultImplementation implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("Cannot save changes because the user does not exist."));
         User newUser = userMapper.UserRequestToUser(userRequest);
         newUser.setUserId(userRequest.getUserId());
+        newUser.setPassword(user.getPassword());
         this.userRepository.save(newUser);
     }
 
