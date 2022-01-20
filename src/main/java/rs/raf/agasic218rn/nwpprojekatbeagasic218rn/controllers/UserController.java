@@ -59,7 +59,7 @@ public class UserController {
     @PostMapping(value = "/create",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> register(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> create(@RequestBody UserRequest userRequest) {
         this.userService.create(userRequest);
         return ResponseEntity.noContent().build();
     }
@@ -79,7 +79,7 @@ public class UserController {
     @PutMapping(value = "/edit/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(@PathVariable("id") Long userId, @RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> edit(@PathVariable("id") Long userId, @RequestBody UserRequest userRequest) {
         userService.edit(userRequest);
         return ResponseEntity.noContent().build();
     }
