@@ -2,9 +2,9 @@ package rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses;
 
 import org.springframework.security.core.GrantedAuthority;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.configuration.PermissionUtil;
-import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.PermissionList;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PermissionListResponse {
     private boolean[] permissionValues = new boolean[PermissionUtil.REPRESENTATIONS.length];
@@ -13,21 +13,12 @@ public class PermissionListResponse {
 
     }
 
-    public PermissionListResponse(PermissionList permissionList) {
-        permissionValues[0] = permissionList.isCanCreateUsers();
-        permissionValues[1] = permissionList.isCanReadUsers();
-        permissionValues[2] = permissionList.isCanUpdateUsers();
-        permissionValues[3] = permissionList.isCanDeleteUsers();
+    public PermissionListResponse(Collection<String> permissions) {
+        permissions.stream().map(persimmon -> Arrays.asList(PermissionUtil.REPRESENTATIONS).indexOf(persimmon)).
+                collect(Collectors.toSet()).forEach(index -> permissionValues[index] = true);
     }
 
-    public PermissionListResponse(Collection<? extends GrantedAuthority> authorities) {
-        for(int i = 0; i < PermissionUtil.AUTHORITIES.length; i++) {
-            if(authorities.contains(PermissionUtil.AUTHORITIES[i])) {
-                permissionValues[i] = true;
-            }
-        }
-    }
-
+    // Needed for jackson
     public boolean[] getPermissionValues() {
         return permissionValues;
     }
@@ -35,30 +26,6 @@ public class PermissionListResponse {
     public void setPermissionValues(boolean[] permissionValues) {
         this.permissionValues = permissionValues;
     }
-
-    public boolean canReadUsers() {
-        return permissionValues[1];
-    }
-
-    public boolean canCreateUsers() {
-        return permissionValues[0];
-    }
-
-    public boolean canUpdateUsers() {
-        return permissionValues[2];
-    }
-
-    public boolean canDeleteUsers() {
-        return permissionValues[3];
-    }
-
-    public void setCanReadUsers(boolean canReadUsers) { permissionValues[1] = canReadUsers; }
-
-    public void setCanCreateUsers(boolean canCreateUsers) { permissionValues[0] = canCreateUsers; }
-
-    public void setCanUpdateUsers(boolean canUpdateUsers) { permissionValues[2] = canUpdateUsers; }
-
-    public void setCanDeleteUsers(boolean canDeleteUsers) { permissionValues[3] = canDeleteUsers; }
 
     public Map<String, Boolean> generatePermissionMap() {
         Map<String, Boolean> permissionMap = new HashMap<>();
@@ -68,8 +35,18 @@ public class PermissionListResponse {
         return permissionMap;
     }
 
-    public List<GrantedAuthority> toSpringAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+    public Set<String> toPermissionList() {
+        Set<String> permissions = new HashSet<>();
+        for(int i = 0; i < permissionValues.length; i++) {
+            if(permissionValues[i]) {
+                permissions.add(PermissionUtil.REPRESENTATIONS[i]);
+            }
+        }
+        return permissions;
+    }
+
+    public Set<GrantedAuthority> toSpringAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
         for(int i = 0; i < permissionValues.length; i++) {
             if(permissionValues[i]) {
                 authorities.add(PermissionUtil.AUTHORITIES[i]);

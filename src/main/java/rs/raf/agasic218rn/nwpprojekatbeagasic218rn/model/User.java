@@ -1,6 +1,8 @@
 package rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -11,17 +13,20 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private String surname;
 
-    @Embedded
-    private PermissionList permissionList;
+    //@Embedded
+    //private PermissionList permissionList;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> permissions = new HashSet<>();
 
     public User() {
     }
@@ -66,11 +71,11 @@ public class User {
         this.surname = surname;
     }
 
-    public PermissionList getPermissionList() {
-        return permissionList;
+    public Set<String> getPermissions() {
+        return permissions;
     }
 
-    public void setPermissionList(PermissionList permissionList) {
-        this.permissionList = permissionList;
+    public void setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
     }
 }

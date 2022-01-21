@@ -12,7 +12,7 @@ import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.repositories.UserRepository;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.UserRequest;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.UserResponse;
 
-import java.util.List;
+import java.util.Set;
 
 public class UserServiceDefaultImplementation implements UserService {
 
@@ -30,8 +30,8 @@ public class UserServiceDefaultImplementation implements UserService {
         if(user == null) {
             throw new UsernameNotFoundException("User with email " + email + " could not be found.");
         }
-        PermissionListResponse permissionListResponse = new PermissionListResponse(user.getPermissionList());
-        List<GrantedAuthority> grantedAuthorities = permissionListResponse.toSpringAuthorities();
+        PermissionListResponse permissionListResponse = new PermissionListResponse(user.getPermissions());
+        Set<GrantedAuthority> grantedAuthorities = permissionListResponse.toSpringAuthorities();
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 

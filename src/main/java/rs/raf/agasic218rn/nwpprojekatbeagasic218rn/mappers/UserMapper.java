@@ -3,7 +3,6 @@ package rs.raf.agasic218rn.nwpprojekatbeagasic218rn.mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.PermissionList;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.PermissionListResponse;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.User;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.UserRequest;
@@ -25,7 +24,7 @@ public class UserMapper {
         userResponse.setEmail(user.getEmail());
         userResponse.setName(user.getName());
         userResponse.setSurname(user.getSurname());
-        userResponse.setPermissionListResponse(new PermissionListResponse(user.getPermissionList()));
+        userResponse.setPermissionListResponse(new PermissionListResponse(user.getPermissions()));
         return userResponse;
     }
 
@@ -35,12 +34,7 @@ public class UserMapper {
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setName(userRequest.getName());
         user.setSurname(userRequest.getSurname());
-        PermissionList permissionList = new PermissionList();
-        permissionList.setCanCreateUsers(userRequest.getPermissionList().canCreateUsers());
-        permissionList.setCanReadUsers(userRequest.getPermissionList().canReadUsers());
-        permissionList.setCanUpdateUsers(userRequest.getPermissionList().canUpdateUsers());
-        permissionList.setCanDeleteUsers(userRequest.getPermissionList().canDeleteUsers());
-        user.setPermissionList(permissionList);
+        user.setPermissions(userRequest.getPermissionList().toPermissionList());
         return user;
     }
 }
