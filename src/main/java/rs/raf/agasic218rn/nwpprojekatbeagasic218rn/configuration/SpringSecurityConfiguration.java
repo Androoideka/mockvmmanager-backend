@@ -49,6 +49,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/machine/create/*").hasAuthority(PermissionUtil.REPRESENTATIONS[8])
                 .antMatchers("/machine/destroy/*").hasAuthority(PermissionUtil.REPRESENTATIONS[9])
                 .antMatchers("/error/list*").authenticated()
+                .antMatchers("/ws*").authenticated()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

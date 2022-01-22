@@ -7,6 +7,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.controllers.MessageController;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.ConcurrentOperationException;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.InvalidMachineStateException;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.mappers.MachineMapper;
@@ -14,6 +15,7 @@ import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.*;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.repositories.MachineRepository;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.MachineRequest;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.MachineResponse;
+import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.StateChangeMessage;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -28,14 +30,16 @@ public class MachineServiceDefaultImplementation implements MachineService {
     private final UserService userService;
     private final ErrorLogService errorLogService;
     private final TaskScheduler taskScheduler;
+    private final MessageController messageController;
 
     @Autowired
-    public MachineServiceDefaultImplementation(MachineMapper machineMapper, MachineRepository machineRepository, UserService userService, ErrorLogService errorLogService, TaskScheduler taskScheduler) {
+    public MachineServiceDefaultImplementation(MachineMapper machineMapper, MachineRepository machineRepository, UserService userService, ErrorLogService errorLogService, TaskScheduler taskScheduler, MessageController messageController) {
         this.machineMapper = machineMapper;
         this.machineRepository = machineRepository;
         this.userService = userService;
         this.errorLogService = errorLogService;
         this.taskScheduler = taskScheduler;
+        this.messageController = messageController;
     }
 
     @Override
@@ -146,6 +150,8 @@ public class MachineServiceDefaultImplementation implements MachineService {
             machine.setStatus(Status.STOPPED);
         }
         machine = this.machineRepository.save(machine);
+        messageController.sendNewState(machine.getCreatedBy().getUserId(),
+                new StateChangeMessage(machine.getMachineId(), machine.getStatus()));
         if(machineOperation == MachineOperation.RESTART) {
             long randomDelay = (long) (Math.random() * TIME_INCREMENT);
             long totalDelay = randomDelay + TIME_INCREMENT;
@@ -153,6 +159,8 @@ public class MachineServiceDefaultImplementation implements MachineService {
             this.taskScheduler.schedule(() -> {
                 finalMachine.setStatus(Status.RUNNING);
                 this.machineRepository.save(finalMachine);
+                messageController.sendNewState(finalMachine.getCreatedBy().getUserId(),
+                        new StateChangeMessage(finalMachine.getMachineId(), finalMachine.getStatus()));
             }, new Date(System.currentTimeMillis() + totalDelay));
         }
     }
