@@ -22,11 +22,15 @@ public class User {
     @Column(nullable = false)
     private String surname;
 
-    //@Embedded
-    //private PermissionList permissionList;
-
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> permissions = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Machine> machines = new HashSet<>();
+
+    public Set<Machine> getMachines() {
+        return machines;
+    }
 
     public User() {
     }

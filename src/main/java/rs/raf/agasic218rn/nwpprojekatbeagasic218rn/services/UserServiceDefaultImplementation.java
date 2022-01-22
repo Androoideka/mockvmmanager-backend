@@ -3,6 +3,7 @@ package rs.raf.agasic218rn.nwpprojekatbeagasic218rn.services;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.mappers.UserMapper;
@@ -26,10 +27,9 @@ public class UserServiceDefaultImplementation implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = this.userRepository.findByEmail(email);
-        if(user == null) {
-            throw new UsernameNotFoundException("User with email " + email + " could not be found.");
-        }
+        User user = this.userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " could not be found."));
         PermissionListResponse permissionListResponse = new PermissionListResponse(user.getPermissions());
         Set<GrantedAuthority> grantedAuthorities = permissionListResponse.toSpringAuthorities();
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
@@ -37,7 +37,9 @@ public class UserServiceDefaultImplementation implements UserService {
 
     @Override
     public UserResponse findByEmail(String email) {
-        User user = this.userRepository.findByEmail(email);
+        User user = this.userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " could not be found."));
         return this.userMapper.UserToUserResponse(user);
     }
 
@@ -64,7 +66,7 @@ public class UserServiceDefaultImplementation implements UserService {
         User user = this.userRepository
                 .findById(userRequest.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("Cannot save changes because the user does not exist."));
-        User newUser = userMapper.UserRequestToUser(userRequest);
+        User newUser = this.userMapper.UserRequestToUser(userRequest);
         newUser.setUserId(userRequest.getUserId());
         newUser.setPassword(user.getPassword());
         this.userRepository.save(newUser);
@@ -76,5 +78,13 @@ public class UserServiceDefaultImplementation implements UserService {
                 .findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Cannot complete the delete operation because the user does not exist."));
         this.userRepository.delete(user);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.userRepository.
+                findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("You are not properly authenticated."));
     }
 }

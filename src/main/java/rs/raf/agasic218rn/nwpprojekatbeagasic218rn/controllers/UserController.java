@@ -80,13 +80,14 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> edit(@PathVariable("id") Long userId, @RequestBody UserRequest userRequest) {
-        userService.edit(userRequest);
+        this.userService.edit(userRequest);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> delete(@PathVariable("id") Long userId) {
-        userService.delete(userId);
+        this.userService.delete(userId);
         return ResponseEntity.noContent().build();
     }
 }
