@@ -8,8 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.services.UserService;
 
@@ -50,6 +48,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/machine/restart/*").hasAuthority(PermissionUtil.REPRESENTATIONS[7])
                 .antMatchers("/machine/create/*").hasAuthority(PermissionUtil.REPRESENTATIONS[8])
                 .antMatchers("/machine/destroy/*").hasAuthority(PermissionUtil.REPRESENTATIONS[9])
+                .antMatchers("/error/list*").authenticated()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

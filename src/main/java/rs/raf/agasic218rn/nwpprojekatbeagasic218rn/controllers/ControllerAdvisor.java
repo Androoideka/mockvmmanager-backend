@@ -38,7 +38,6 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleMachineStateException(InvalidMachineStateException exception) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", exception.getMessage());
-        errorResponse.put("machine_status", exception.getStatus().toString());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

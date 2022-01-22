@@ -47,7 +47,6 @@ public class MachineSpecification implements Specification<Machine> {
         // Status filter
         Predicate statusPredicate = null;
         for(Status status : this.statuses) {
-            System.out.println(status.toString());
             Predicate currentPredicate = criteriaBuilder.equal(root.get("status"), status);
             if(statusPredicate == null) {
                 statusPredicate = currentPredicate;

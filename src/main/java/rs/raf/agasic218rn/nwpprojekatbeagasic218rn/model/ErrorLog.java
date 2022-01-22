@@ -1,10 +1,7 @@
 package rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model;
 
-import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.ErrorCause;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 @Entity
 public class ErrorLog {
@@ -29,11 +26,11 @@ public class ErrorLog {
 
     }
 
-    public ErrorLog(MachineOperation machineOperation, Machine machine, ErrorCause errorCause) {
+    public ErrorLog(MachineOperation machineOperation, Machine machine, String message) {
         this.dateTime = LocalDateTime.now();
         this.machineOperation = machineOperation;
         this.machine = machine;
-        this.message = ErrorCause.generateMessage(errorCause, machineOperation, machine.getStatus());
+        this.message = message;
     }
 
     public Long getErrorId() {

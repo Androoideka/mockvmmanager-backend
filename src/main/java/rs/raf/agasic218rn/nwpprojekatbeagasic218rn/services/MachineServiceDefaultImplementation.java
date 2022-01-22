@@ -8,11 +8,9 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.ConcurrentOperationException;
-import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.ErrorCause;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.exceptions.InvalidMachineStateException;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.mappers.MachineMapper;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.*;
-import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.repositories.ErrorRepository;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.repositories.MachineRepository;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.MachineRequest;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.MachineResponse;
@@ -21,23 +19,22 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MachineServiceDefaultImplementation implements MachineService {
     private static final long TIME_INCREMENT = 5000;
     private final MachineMapper machineMapper;
     private final MachineRepository machineRepository;
-    private final ErrorRepository errorRepository;
     private final UserService userService;
+    private final ErrorLogService errorLogService;
     private final TaskScheduler taskScheduler;
 
     @Autowired
-    public MachineServiceDefaultImplementation(MachineMapper machineMapper, MachineRepository machineRepository, ErrorRepository errorRepository, UserService userService, TaskScheduler taskScheduler) {
+    public MachineServiceDefaultImplementation(MachineMapper machineMapper, MachineRepository machineRepository, UserService userService, ErrorLogService errorLogService, TaskScheduler taskScheduler) {
         this.machineMapper = machineMapper;
         this.machineRepository = machineRepository;
-        this.errorRepository = errorRepository;
         this.userService = userService;
+        this.errorLogService = errorLogService;
         this.taskScheduler = taskScheduler;
     }
 
@@ -61,11 +58,10 @@ public class MachineServiceDefaultImplementation implements MachineService {
         Machine machine = this.get(machineId);
         // Initiate checks
         if(!this.isValidState(machine, machineOperation)) {
-            throw new InvalidMachineStateException(
-                    ErrorCause.generateMessage(ErrorCause.INVALID_STATE, machineOperation, machine.getStatus()), machine.getStatus());
+            throw new InvalidMachineStateException(machineOperation, machine.getStatus());
         }
         if(!this.isReadyToExecute(machine, machineOperation)) {
-            throw new ConcurrentOperationException(ErrorCause.generateMessage(ErrorCause.CONCURRENCY, machineOperation, machine.getStatus()));
+            throw new ConcurrentOperationException(machineOperation, machine.getStatus());
         }
         commenceOperation(machine, machineOperation);
     }
@@ -109,16 +105,14 @@ public class MachineServiceDefaultImplementation implements MachineService {
         if(machineOperation == MachineOperation.RESTART && machine.getStatus() == Status.RUNNING) {
             return true;
         }
-        ErrorLog errorLog = new ErrorLog(machineOperation, machine, ErrorCause.INVALID_STATE);
-        this.errorRepository.save(errorLog);
+        this.errorLogService.generateInvalidStateError(machineOperation, machine);
         return false;
     }
 
     private boolean isReadyToExecute(Machine machine, MachineOperation machineOperation) {
         Integer modified = this.machineRepository.incrementOpCounter(machine.getMachineId());
         if(modified.equals(0)) {
-            ErrorLog errorLog = new ErrorLog(machineOperation, machine, ErrorCause.CONCURRENCY);
-            this.errorRepository.save(errorLog);
+            this.errorLogService.generateConcurrencyError(machineOperation, machine);
             return false;
         }
         // Updating the opCounter on the object manually because getting it from the database doesn't work due to some JPA cache and I don't want to purge it
@@ -168,11 +162,10 @@ public class MachineServiceDefaultImplementation implements MachineService {
         Machine machine = this.get(machineId);
         MachineOperation machineOperation = MachineOperation.DESTROY;
         if(machine.getStatus() != Status.STOPPED) {
-            throw new InvalidMachineStateException(
-                    ErrorCause.generateMessage(ErrorCause.INVALID_STATE, machineOperation, machine.getStatus()), Status.RUNNING);
+            throw new InvalidMachineStateException(machineOperation, machine.getStatus());
         }
         if(!this.isReadyToExecute(machine, MachineOperation.DESTROY)) {
-            throw new ConcurrentOperationException(ErrorCause.generateMessage(ErrorCause.CONCURRENCY, machineOperation, machine.getStatus()));
+            throw new ConcurrentOperationException(machineOperation, machine.getStatus());
         }
         machine.setActive(false);
         this.machineRepository.save(machine);
