@@ -6,7 +6,6 @@ import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.MachineRequest;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.MachineResponse;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MachineService {

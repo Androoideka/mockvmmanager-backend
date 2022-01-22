@@ -9,9 +9,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class MachineSpecification implements Specification<Machine> {
 
@@ -22,9 +24,13 @@ public class MachineSpecification implements Specification<Machine> {
     private final Long userId;
     private boolean showInactive;
 
-    public MachineSpecification(String name, List<Status> statuses, LocalDate dateFrom, LocalDate dateTo, Long userId) {
+    public MachineSpecification(String name, List<String> statuses, LocalDate dateFrom, LocalDate dateTo, Long userId) {
         this.name = name;
-        this.statuses = statuses;
+        if(statuses.size() == 1 && statuses.get(0).equals("NONE")) {
+            this.statuses = new ArrayList<>();
+        } else {
+            this.statuses = statuses.stream().map(Status::valueOf).collect(Collectors.toList());
+        }
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.userId = userId;
@@ -38,21 +44,10 @@ public class MachineSpecification implements Specification<Machine> {
     @Override
     public Predicate toPredicate(Root<Machine> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-        if(!showInactive) {
-            predicates.add(criteriaBuilder.equal(root.get("active"), true));
-        }
-        if(userId != -1) {
-            predicates.add(criteriaBuilder.equal(root.get("createdBy"), this.userId));
-        }
-
-        if (!name.isBlank()) {
-            predicates.add(criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("name")),
-                    "%" + this.name.toLowerCase(Locale.ROOT) + "%"
-            ));
-        }
+        // Status filter
         Predicate statusPredicate = null;
         for(Status status : this.statuses) {
+            System.out.println(status.toString());
             Predicate currentPredicate = criteriaBuilder.equal(root.get("status"), status);
             if(statusPredicate == null) {
                 statusPredicate = currentPredicate;
@@ -60,9 +55,30 @@ public class MachineSpecification implements Specification<Machine> {
                 statusPredicate = criteriaBuilder.or(statusPredicate, currentPredicate);
             }
         }
-        if (dateFrom != null && dateTo != null) {
-            predicates.add(criteriaBuilder.between(root.get("created"), this.dateFrom, this.dateTo));
+        if(statusPredicate != null) {
+            predicates.add(statusPredicate);
+        } else {
+            return criteriaBuilder.disjunction();
         }
+        // Admin filters (not in use)
+        if(!showInactive) {
+            predicates.add(criteriaBuilder.equal(root.get("active"), true));
+        }
+        if(userId != -1) {
+            predicates.add(criteriaBuilder.equal(root.get("createdBy"), this.userId));
+        }
+        // Name filter
+        if (!name.isBlank()) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("name")),
+                    "%" + this.name.toLowerCase(Locale.ROOT) + "%"
+            ));
+        }
+        // Date filter
+        if (dateFrom != null && dateTo != null) {
+            predicates.add(criteriaBuilder.between(root.get("created"), this.dateFrom.atStartOfDay(), this.dateTo.atTime(LocalTime.MAX)));
+        }
+        // Combination
         return predicates.stream()
                 .reduce(predicates.get(0),
                         criteriaBuilder::and);

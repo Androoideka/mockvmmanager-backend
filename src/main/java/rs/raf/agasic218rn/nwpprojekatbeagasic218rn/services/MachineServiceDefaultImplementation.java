@@ -50,8 +50,8 @@ public class MachineServiceDefaultImplementation implements MachineService {
 
     @Override
     public Page<MachineResponse> search(String name, List<String> statuses, LocalDate dateFrom, LocalDate dateTo, Integer page, Integer size) {
-        List<Status> statusesEnum = statuses.stream().map(Status::valueOf).collect(Collectors.toList());
-        MachineSpecification specification = new MachineSpecification(name, statusesEnum, dateFrom, dateTo, userService.getCurrentUser().getUserId());
+        MachineSpecification specification = new MachineSpecification(name, statuses, dateFrom, dateTo,
+                userService.getCurrentUser().getUserId());
         return this.machineRepository.findAll(specification, PageRequest.of(page, size))
                 .map(this.machineMapper::machineToMachineResponse);
     }
@@ -67,9 +67,6 @@ public class MachineServiceDefaultImplementation implements MachineService {
         if(!this.isReadyToExecute(machine, machineOperation)) {
             throw new ConcurrentOperationException(ErrorCause.generateMessage(ErrorCause.CONCURRENCY, machineOperation, machine.getStatus()));
         }
-        // Refresh version and opCounter
-        machine = this.machineRepository
-                .getById(machineId);
         commenceOperation(machine, machineOperation);
     }
 
@@ -84,9 +81,6 @@ public class MachineServiceDefaultImplementation implements MachineService {
             if(machineOptional.isPresent()) {
                 Machine machineCurr = machineOptional.get();
                 if(this.isValidState(machineCurr, machineOperation)) {
-                    // Refresh version and opCounter
-                    machineCurr = this.machineRepository
-                            .getById(machineId);
                     if(this.isReadyToExecute(machineCurr, machineOperation)) {
                         commenceOperation(machineCurr, machineOperation);
                     }
@@ -127,6 +121,8 @@ public class MachineServiceDefaultImplementation implements MachineService {
             this.errorRepository.save(errorLog);
             return false;
         }
+        // Updating the opCounter on the object manually because getting it from the database doesn't work due to some JPA cache and I don't want to purge it
+        machine.setOpCounter(machine.getOpCounter() + 1);
         return true;
     }
 

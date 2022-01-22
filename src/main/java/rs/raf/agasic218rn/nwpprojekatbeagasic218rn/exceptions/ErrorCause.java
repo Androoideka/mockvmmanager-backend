@@ -11,8 +11,8 @@ public enum ErrorCause {
     public static String generateMessage(ErrorCause errorCause, MachineOperation machineOperation, Status status) {
         if(errorCause == ErrorCause.CONCURRENCY) {
             return "Machine could not be "
-                    + machineOperation.toString().toLowerCase(Locale.ROOT)
-                    + "ed because another operation was already executing.";
+                    + MachineOperation.past(machineOperation).toLowerCase(Locale.ROOT)
+                    + " because another operation was already executing.";
         } else if(errorCause == ErrorCause.INVALID_STATE) {
             return "Could not " + machineOperation.toString().toLowerCase(Locale.ROOT)
                     + " machine because the machine was "

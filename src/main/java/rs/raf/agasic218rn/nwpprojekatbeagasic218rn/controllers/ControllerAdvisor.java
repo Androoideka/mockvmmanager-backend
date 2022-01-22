@@ -17,8 +17,15 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException() {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Your query was invalid.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(ConcurrentOperationException.class)
     public ResponseEntity<?> handleConcurrentOperationException(ConcurrentOperationException exception) {

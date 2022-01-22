@@ -11,7 +11,7 @@ import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.Machine;
 @Repository
 public interface MachineRepository extends JpaRepository<Machine, Long>, JpaSpecificationExecutor<Machine> {
     @Modifying
-    @Query("update Machine m set m.opCounter = m.opCounter + 2 where m.machineId = :machineId and m.version = m.opCounter")
+    @Query("update Machine m set m.opCounter = m.opCounter + 1 where m.machineId = :machineId and m.version = m.opCounter")
     @Transactional
     Integer incrementOpCounter(Long machineId);
 }
