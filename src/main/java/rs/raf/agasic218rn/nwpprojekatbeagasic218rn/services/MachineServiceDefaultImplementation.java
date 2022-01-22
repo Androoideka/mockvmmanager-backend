@@ -141,12 +141,12 @@ public class MachineServiceDefaultImplementation implements MachineService {
         } else if(machineOperation == MachineOperation.STOP) {
             machine.setStatus(Status.STOPPED);
         } else if(machineOperation == MachineOperation.RESTART) {
+            // Has to be modified one more time
+            machine.setOpCounter(machine.getOpCounter() + 1);
             machine.setStatus(Status.STOPPED);
         }
         machine = this.machineRepository.save(machine);
         if(machineOperation == MachineOperation.RESTART) {
-            // Has to be modified one more time
-            machine.setOpCounter(machine.getOpCounter() + 1);
             long randomDelay = (long) (Math.random() * TIME_INCREMENT);
             long totalDelay = randomDelay + TIME_INCREMENT;
             Machine finalMachine = machine;
