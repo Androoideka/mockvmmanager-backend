@@ -18,6 +18,6 @@ public class InvalidMachineStateException extends RuntimeException {
     public static String generateMessage(MachineOperation machineOperation, Status status) {
         return "Could not " + machineOperation.toString().toLowerCase(Locale.ROOT)
                 + " machine because the machine was "
-                + status.toString().toLowerCase(Locale.ROOT);
+                + status.toString().toLowerCase(Locale.ROOT) + '.';
     }
 }
