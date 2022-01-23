@@ -20,7 +20,7 @@ public class MessageController {
         this.simpUserRegistry = simpUserRegistry;
     }
 
-    public void sendNewState(Long userId, StateChangeMessage message) {
-        this.simpMessagingTemplate.convertAndSend("/topic/" + userId, message);
+    public void sendNewState(StateChangeMessage message) {
+        this.simpMessagingTemplate.convertAndSend("/topic/" + message.getUserId(), message);
     }
 }

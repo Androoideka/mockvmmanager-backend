@@ -150,8 +150,7 @@ public class MachineServiceDefaultImplementation implements MachineService {
             machine.setStatus(Status.STOPPED);
         }
         machine = this.machineRepository.save(machine);
-        messageController.sendNewState(machine.getCreatedBy().getUserId(),
-                new StateChangeMessage(machine.getMachineId(), machine.getStatus()));
+        messageController.sendNewState(machineMapper.machineToMachineMessage(machine));
         if(machineOperation == MachineOperation.RESTART) {
             long randomDelay = (long) (Math.random() * TIME_INCREMENT);
             long totalDelay = randomDelay + TIME_INCREMENT;
@@ -159,8 +158,7 @@ public class MachineServiceDefaultImplementation implements MachineService {
             this.taskScheduler.schedule(() -> {
                 finalMachine.setStatus(Status.RUNNING);
                 this.machineRepository.save(finalMachine);
-                messageController.sendNewState(finalMachine.getCreatedBy().getUserId(),
-                        new StateChangeMessage(finalMachine.getMachineId(), finalMachine.getStatus()));
+                messageController.sendNewState(machineMapper.machineToMachineMessage(finalMachine));
             }, new Date(System.currentTimeMillis() + totalDelay));
         }
     }

@@ -9,6 +9,7 @@ public class MachineResponse {
     private String name;
     private LocalDateTime created;
     private Status status;
+    private Long operationsLeft;
 
     public MachineResponse() {
     }
@@ -43,5 +44,13 @@ public class MachineResponse {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Long getOperationsLeft() {
+        return operationsLeft;
+    }
+
+    public void setOperationsLeft(Long operationsLeft) {
+        this.operationsLeft = operationsLeft;
     }
 }

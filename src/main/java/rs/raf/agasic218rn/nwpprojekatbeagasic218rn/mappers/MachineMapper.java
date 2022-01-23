@@ -6,6 +6,7 @@ import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.Status;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.model.User;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.requests.MachineRequest;
 import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.MachineResponse;
+import rs.raf.agasic218rn.nwpprojekatbeagasic218rn.responses.StateChangeMessage;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +18,7 @@ public class MachineMapper {
         machineResponse.setName(machine.getName());
         machineResponse.setCreated(machine.getCreated());
         machineResponse.setStatus(machine.getStatus());
+        machineResponse.setOperationsLeft(machine.getOpCounter() - machine.getVersion());
         return machineResponse;
     }
 
@@ -30,5 +32,14 @@ public class MachineMapper {
         machine.setVersion(0L);
         machine.setOpCounter(0L);
         return machine;
+    }
+
+    public StateChangeMessage machineToMachineMessage(Machine machine) {
+        StateChangeMessage stateChangeMessage = new StateChangeMessage();
+        stateChangeMessage.setMachineId(machine.getMachineId());
+        stateChangeMessage.setStatus(machine.getStatus());
+        stateChangeMessage.setOperationsLeft(machine.getOpCounter() - machine.getVersion());
+        stateChangeMessage.setUserId(machine.getCreatedBy().getUserId());
+        return stateChangeMessage;
     }
 }
