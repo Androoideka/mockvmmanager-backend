@@ -17,7 +17,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
-//@RestControllerAdvice
+@RestControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
