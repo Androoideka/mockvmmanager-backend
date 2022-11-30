@@ -8,11 +8,11 @@
 		<version>2.6.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>rs.raf.agasic218rn</groupId>
-	<artifactId>nwpprojekatbe-agasic218rn</artifactId>
+	<groupId>io.github.androoideka</groupId>
+	<artifactId>vm-manager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>nwpprojekatbe-agasic218rn</name>
-	<description>Projekat za NWP</description>
+	<name>VM Manager Demo</name>
+	<description>Demo for a VM and user management app, backend created with Java + Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -39,6 +39,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
