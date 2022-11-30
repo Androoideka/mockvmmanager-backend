@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import io.github.androoideka.vm_manager.responses.ErrorLogResponse;
 import io.github.androoideka.vm_manager.services.ErrorLogService;
 
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/error")
 public class ErrorController {

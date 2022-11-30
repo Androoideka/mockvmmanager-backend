@@ -15,7 +15,6 @@ import io.github.androoideka.vm_manager.services.MachineService;
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/machine")
 public class MachineController {

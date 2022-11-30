@@ -20,7 +20,6 @@ import io.github.androoideka.vm_manager.services.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/user")
 public class UserController {
