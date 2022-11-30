@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "tenancy_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
