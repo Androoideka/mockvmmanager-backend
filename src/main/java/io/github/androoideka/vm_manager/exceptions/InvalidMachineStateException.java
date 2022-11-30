@@ -5,10 +5,11 @@ import java.util.Locale;
 import io.github.androoideka.vm_manager.model.MachineOperation;
 import io.github.androoideka.vm_manager.model.Status;
 
-public class InvalidMachineStateException extends RuntimeException {
+public class InvalidMachineStateException extends OperationException {
 
     public InvalidMachineStateException(MachineOperation machineOperation, Status status) {
-        super(InvalidMachineStateException.generateMessage(machineOperation, status));
+        super(InvalidMachineStateException.generateMessage(machineOperation, status),
+                machineOperation, status);
     }
 
     public static String generateMessage(MachineOperation machineOperation, Status status) {

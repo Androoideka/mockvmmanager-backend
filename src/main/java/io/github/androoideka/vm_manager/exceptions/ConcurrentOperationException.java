@@ -5,10 +5,11 @@ import java.util.Locale;
 import io.github.androoideka.vm_manager.model.MachineOperation;
 import io.github.androoideka.vm_manager.model.Status;
 
-public class ConcurrentOperationException extends RuntimeException {
+public class ConcurrentOperationException extends OperationException {
 
     public ConcurrentOperationException(MachineOperation machineOperation, Status status) {
-        super(ConcurrentOperationException.generateMessage(machineOperation, status));
+        super(ConcurrentOperationException.generateMessage(machineOperation, status),
+                machineOperation, status);
     }
 
     public static String generateMessage(MachineOperation machineOperation, Status status) {
