@@ -1,0 +1,25 @@
+services:
+  spring-host:
+    image: androoideka/alpine-java:latest
+    env_file: db.env
+    container_name: vm-manager-backend
+    networks:
+      - spring-postgres
+    expose:
+      - 8080
+    volumes:
+      - ../..:/workspaces:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+  db:
+    image: postgres:alpine
+    restart: always
+    env_file: db.env
+    networks:
+      - spring-postgres
+    expose:
+      - 5432
+
+networks:
+  spring-postgres:
+    name: "spring-postgres"
