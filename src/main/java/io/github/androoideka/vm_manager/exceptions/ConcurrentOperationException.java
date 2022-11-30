@@ -6,13 +6,9 @@ import io.github.androoideka.vm_manager.model.MachineOperation;
 import io.github.androoideka.vm_manager.model.Status;
 
 public class ConcurrentOperationException extends RuntimeException {
-    private final MachineOperation machineOperation;
-    private final Status status;
 
     public ConcurrentOperationException(MachineOperation machineOperation, Status status) {
         super(ConcurrentOperationException.generateMessage(machineOperation, status));
-        this.machineOperation = machineOperation;
-        this.status = status;
     }
 
     public static String generateMessage(MachineOperation machineOperation, Status status) {

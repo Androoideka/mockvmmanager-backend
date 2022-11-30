@@ -6,13 +6,9 @@ import io.github.androoideka.vm_manager.model.MachineOperation;
 import io.github.androoideka.vm_manager.model.Status;
 
 public class InvalidMachineStateException extends RuntimeException {
-    private final MachineOperation machineOperation;
-    private final Status status;
 
     public InvalidMachineStateException(MachineOperation machineOperation, Status status) {
         super(InvalidMachineStateException.generateMessage(machineOperation, status));
-        this.machineOperation = machineOperation;
-        this.status = status;
     }
 
     public static String generateMessage(MachineOperation machineOperation, Status status) {

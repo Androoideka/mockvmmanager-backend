@@ -16,7 +16,6 @@ import io.github.androoideka.vm_manager.model.*;
 import io.github.androoideka.vm_manager.repositories.MachineRepository;
 import io.github.androoideka.vm_manager.requests.MachineRequest;
 import io.github.androoideka.vm_manager.responses.MachineResponse;
-import io.github.androoideka.vm_manager.responses.StateChangeMessage;
 
 import java.time.LocalDate;
 import java.util.Date;
