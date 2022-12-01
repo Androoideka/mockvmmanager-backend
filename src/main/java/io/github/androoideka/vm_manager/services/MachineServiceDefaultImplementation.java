@@ -161,8 +161,8 @@ public class MachineServiceDefaultImplementation implements MachineService {
             Machine finalMachine = machine;
             this.taskScheduler.schedule(() -> {
                 finalMachine.setStatus(Status.RUNNING);
-                this.machineRepository.save(finalMachine);
-                messageController.sendNewState(machineMapper.machineToMachineMessage(finalMachine));
+                Machine refreshedMachine = this.machineRepository.save(finalMachine);
+                messageController.sendNewState(machineMapper.machineToMachineMessage(refreshedMachine));
             }, new Date(System.currentTimeMillis() + totalDelay));
         }
     }
