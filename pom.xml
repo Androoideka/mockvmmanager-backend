@@ -24,6 +24,9 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.postgresql</groupId>
@@ -34,6 +37,9 @@
 		</profile>
 		<profile>
 			<id>portfolio</id>
+			<properties>
+				<spring.profiles.active>portfolio</spring.profiles.active>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.h2database</groupId>
@@ -80,7 +86,15 @@
 		</dependency>
 	</dependencies>
 
+	<packaging>jar</packaging>
 	<build>
+		<finalName>vm-manager</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
