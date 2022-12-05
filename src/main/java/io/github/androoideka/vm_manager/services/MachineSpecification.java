@@ -4,11 +4,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 import io.github.androoideka.vm_manager.model.Machine;
 import io.github.androoideka.vm_manager.model.Status;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import io.github.androoideka.vm_manager.model.User;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class MachineSpecification implements Specification<Machine> {
         List<Predicate> predicates = new ArrayList<>();
         // Status filter
         Predicate statusPredicate = null;
-        for (Status status : this.statuses) {
+        for (Status status : statuses) {
             Predicate currentPredicate = criteriaBuilder.equal(root.get("status"), status);
             if (statusPredicate == null) {
                 statusPredicate = currentPredicate;
@@ -65,18 +66,20 @@ public class MachineSpecification implements Specification<Machine> {
             predicates.add(criteriaBuilder.equal(root.get("active"), true));
         }
         if (userId != -1) {
-            predicates.add(criteriaBuilder.equal(root.get("createdBy"), this.userId));
+            Join<User, Machine> userOfMachines = root.join("createdBy");
+            predicates.add(criteriaBuilder.equal(userOfMachines.get("userId"), userId));
         }
         // Name filter
         if (!name.isBlank()) {
             predicates.add(criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("name")),
-                    "%" + this.name.toLowerCase(Locale.ROOT) + "%"));
+                    "%" + name.toLowerCase(Locale.ROOT) + "%"));
         }
         // Date filter
         if (dateFrom != null && dateTo != null) {
-            predicates.add(criteriaBuilder.between(root.get("created"), this.dateFrom.atStartOfDay(),
-                    this.dateTo.atTime(LocalTime.MAX)));
+            predicates.add(criteriaBuilder.between(root.get("created"),
+                    dateFrom.atStartOfDay(),
+                    dateTo.atTime(LocalTime.MAX)));
         }
         // Combination
         return predicates.stream()

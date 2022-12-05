@@ -17,8 +17,8 @@ import io.github.androoideka.vm_manager.repositories.MachineRepository;
 import io.github.androoideka.vm_manager.requests.MachineRequest;
 import io.github.androoideka.vm_manager.responses.MachineResponse;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,8 +139,9 @@ public class MachineServiceDefaultImplementation implements MachineService {
         if (machineOperation != MachineOperation.RESTART) {
             totalDelay += TIME_INCREMENT;
         }
+        Instant instant = Instant.now().plusMillis(totalDelay);
         this.taskScheduler.schedule(() -> finishOperation(machine, machineOperation),
-                new Date(System.currentTimeMillis() + totalDelay));
+                instant);
     }
 
     private void finishOperation(Machine machine, MachineOperation machineOperation) {
@@ -159,11 +160,12 @@ public class MachineServiceDefaultImplementation implements MachineService {
             long randomDelay = (long) (Math.random() * TIME_INCREMENT);
             long totalDelay = randomDelay + TIME_INCREMENT;
             Machine finalMachine = machine;
+            Instant instant = Instant.now().plusMillis(totalDelay);
             this.taskScheduler.schedule(() -> {
                 finalMachine.setStatus(Status.RUNNING);
                 Machine refreshedMachine = this.machineRepository.save(finalMachine);
                 messageController.sendNewState(machineMapper.machineToMachineMessage(refreshedMachine));
-            }, new Date(System.currentTimeMillis() + totalDelay));
+            }, instant);
         }
     }
 

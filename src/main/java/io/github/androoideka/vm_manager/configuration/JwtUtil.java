@@ -3,7 +3,8 @@ package io.github.androoideka.vm_manager.configuration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.security.Keys;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 @Component
 public class JwtUtil {
 
-    @Value("${jjwt.secretkey}")
-    private String SECRET_KEY;
+    SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token).getBody();
     }
 
     public String getUsername(String token) {
@@ -36,7 +41,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 10000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
+                .signWith(key).compact();
     }
 
     public boolean validateToken(String token, UserDetails user) {

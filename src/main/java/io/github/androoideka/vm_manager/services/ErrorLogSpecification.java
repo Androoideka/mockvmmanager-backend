@@ -3,11 +3,12 @@ package io.github.androoideka.vm_manager.services;
 import org.springframework.data.jpa.domain.Specification;
 
 import io.github.androoideka.vm_manager.model.ErrorLog;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import io.github.androoideka.vm_manager.model.Machine;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.Set;
 
 public class ErrorLogSpecification implements Specification<ErrorLog> {
@@ -20,7 +21,8 @@ public class ErrorLogSpecification implements Specification<ErrorLog> {
 
     @Override
     public Predicate toPredicate(Root<ErrorLog> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        CriteriaBuilder.In<Long> list = criteriaBuilder.in(root.get("machine"));
+        Join<Machine, ErrorLog> machineErrors = root.join("machine");
+        CriteriaBuilder.In<Long> list = criteriaBuilder.in(machineErrors.get("machineId"));
         for (Long machineId : machineIds) {
             list.value(machineId);
         }

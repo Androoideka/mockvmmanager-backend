@@ -17,8 +17,8 @@ import io.github.androoideka.vm_manager.responses.LoginResponse;
 import io.github.androoideka.vm_manager.responses.UserResponse;
 import io.github.androoideka.vm_manager.services.UserService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/user")
