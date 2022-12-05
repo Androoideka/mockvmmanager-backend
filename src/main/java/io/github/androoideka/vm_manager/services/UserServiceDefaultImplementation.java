@@ -2,7 +2,6 @@ package io.github.androoideka.vm_manager.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,10 +10,7 @@ import io.github.androoideka.vm_manager.mappers.UserMapper;
 import io.github.androoideka.vm_manager.model.User;
 import io.github.androoideka.vm_manager.repositories.UserRepository;
 import io.github.androoideka.vm_manager.requests.UserRequest;
-import io.github.androoideka.vm_manager.responses.PermissionListResponse;
 import io.github.androoideka.vm_manager.responses.UserResponse;
-
-import java.util.Set;
 
 public class UserServiceDefaultImplementation implements UserService {
 
@@ -29,18 +25,15 @@ public class UserServiceDefaultImplementation implements UserService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = this.userRepository
-                .findByEmail(email)
+                .findByUsername(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " could not be found."));
-        PermissionListResponse permissionListResponse = new PermissionListResponse(user.getPermissions());
-        Set<GrantedAuthority> grantedAuthorities = permissionListResponse.toSpringAuthorities();
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-                grantedAuthorities);
+        return user;
     }
 
     @Override
     public UserResponse findByEmail(String email) {
         User user = this.userRepository
-                .findByEmail(email)
+                .findByUsername(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " could not be found."));
         return this.userMapper.UserToUserResponse(user);
     }
@@ -87,7 +80,7 @@ public class UserServiceDefaultImplementation implements UserService {
     @Override
     public User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.userRepository.findByEmail(email)
+        return this.userRepository.findByUsername(email)
                 .orElseThrow(() -> new UsernameNotFoundException("You are not properly authenticated."));
     }
 }

@@ -1,22 +1,16 @@
 package io.github.androoideka.vm_manager.responses;
 
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import io.github.androoideka.vm_manager.configuration.PermissionUtil;
+import io.github.androoideka.vm_manager.configuration.PermUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PermissionListResponse {
-    private boolean[] permissionValues = new boolean[PermissionUtil.REPRESENTATIONS.length];
+    private boolean[] permissionValues = new boolean[PermUtil.AUTHORITIES.size()];
 
     public PermissionListResponse() {
 
-    }
-
-    public PermissionListResponse(Collection<String> permissions) {
-        permissions.stream().map(persimmon -> Arrays.asList(PermissionUtil.REPRESENTATIONS).indexOf(persimmon))
-                .collect(Collectors.toSet()).forEach(index -> permissionValues[index] = true);
     }
 
     // Needed for jackson
@@ -28,29 +22,20 @@ public class PermissionListResponse {
         this.permissionValues = permissionValues;
     }
 
-    public Map<String, Boolean> generatePermissionMap() {
-        Map<String, Boolean> permissionMap = new HashMap<>();
-        for (int i = 0; i < permissionValues.length; i++) {
-            permissionMap.put(PermissionUtil.REPRESENTATIONS[i], permissionValues[i]);
+    public static PermissionListResponse fromSpringAuthorities(Set<SimpleGrantedAuthority> authorities) {
+        PermissionListResponse list = new PermissionListResponse();
+        list.permissionValues = new boolean[PermUtil.AUTHORITIES.size()];
+        for (int i = 0; i < PermUtil.AUTHORITIES.size(); i++) {
+            list.permissionValues[i] = authorities.contains(PermUtil.AUTHORITIES.get(i));
         }
-        return permissionMap;
+        return list;
     }
 
-    public Set<String> toPermissionList() {
-        Set<String> permissions = new HashSet<>();
+    public Set<SimpleGrantedAuthority> toSpringAuthorities() {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         for (int i = 0; i < permissionValues.length; i++) {
             if (permissionValues[i]) {
-                permissions.add(PermissionUtil.REPRESENTATIONS[i]);
-            }
-        }
-        return permissions;
-    }
-
-    public Set<GrantedAuthority> toSpringAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (int i = 0; i < permissionValues.length; i++) {
-            if (permissionValues[i]) {
-                authorities.add(PermissionUtil.AUTHORITIES[i]);
+                authorities.add(PermUtil.AUTHORITIES.get(i));
             }
         }
         return authorities;
@@ -96,7 +81,7 @@ public class PermissionListResponse {
         StringBuilder display = new StringBuilder();
         for (int i = 0; i < permissionValues.length; i++) {
             if (permissionValues[i]) {
-                display.append(PermissionUtil.SHORT_VALUES[i]);
+                display.append(PermUtil.SHORT_VALUES[i]);
             } else {
                 display.append('-');
             }

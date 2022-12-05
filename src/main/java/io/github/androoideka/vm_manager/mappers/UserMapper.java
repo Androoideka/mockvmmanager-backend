@@ -1,5 +1,7 @@
 package io.github.androoideka.vm_manager.mappers;
 
+import java.util.HashSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -22,20 +24,22 @@ public class UserMapper {
     public UserResponse UserToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getUserId());
-        userResponse.setEmail(user.getEmail());
+        userResponse.setEmail(user.getUsername());
         userResponse.setName(user.getName());
         userResponse.setSurname(user.getSurname());
-        userResponse.setPermissionListResponse(new PermissionListResponse(user.getPermissions()));
+        userResponse.setPermissionListResponse(
+                PermissionListResponse.fromSpringAuthorities(
+                        new HashSet<>(user.getAuthorities())));
         return userResponse;
     }
 
     public User UserRequestToUser(UserRequest userRequest) {
         User user = new User();
-        user.setEmail(userRequest.getEmail());
+        user.setUsername(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setName(userRequest.getName());
         user.setSurname(userRequest.getSurname());
-        user.setPermissions(userRequest.getPermissionList().toPermissionList());
+        user.setAuthorities(userRequest.getPermissionList().toSpringAuthorities());
         return user;
     }
 }
