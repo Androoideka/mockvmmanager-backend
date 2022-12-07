@@ -1,0 +1,65 @@
+name: Generate release for VM manager
+run-name: Preparing release ${{ github.ref_name }} for vm-manager
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  build-frontend:
+    uses: androoideka/vm-manager-frontend/.github/workflows/build.yaml@master
+    with:
+      artifact-name: frontend
+
+  build-jar:
+    runs-on: ubuntu-latest
+    needs: build-frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: microsoft
+          java-version: '17'
+          cache: maven
+      - name: Add frontend build to project
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend
+          path: src/main/resources/public
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots package -Pportfolio
+      - name: Move all artifacts to be packaged into new folder
+        run: mkdir staging && cp target/*.jar staging
+      - name: Upload jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: vm-manager
+          path: staging
+
+  package:
+    uses: androoideka/ci/.github/workflows/javapack.yaml@main
+    needs: build-jar
+    with:
+      artifact-name: vm-manager
+      console: true
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - name: Download jar
+        uses: actions/download-artifact@v3
+        with:
+          name: vm-manager
+      - name: Download zip
+        uses: actions/download-artifact@v3
+        with:
+          name: vm-manager.zip
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            vm-manager
+            vm-manager.zip
