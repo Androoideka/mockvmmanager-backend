@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.github.androoideka</groupId>
 	<artifactId>vm-manager</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>VM Manager Demo</name>
 	<description>Demo for a VM and user management app, backend created with Java + Spring Boot</description>
 	
